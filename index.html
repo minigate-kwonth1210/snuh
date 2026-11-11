@@ -2088,6 +2088,21 @@ html body #story .visual-wrap{position:relative}
 .our-door.open .our-door-l{transform:translateX(-102%)}.our-door.open .our-door-r{transform:translateX(102%)}
 .our-door-chip{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.95);color:#1e6b45;font-size:16px;font-weight:800;opacity:0;transition:opacity .3s ease 1.2s;white-space:nowrap}
 .our-door.open .our-door-chip{opacity:1}
+/* [연습장] 연습만 다시 하기 (엑스레이 끝 화면, 11-11 실험): 미션 칸과 같은 카드, 그림 버튼 한 줄. 움직임 없음 */
+.our-room{width:min(100%,720px);margin:12px auto 0;padding:18px 16px;border-radius:20px;background:#fff;box-shadow:0 8px 24px -16px rgba(11,42,74,.35);text-align:center}
+.our-room h2{margin:0;font-size:24px}
+.our-room .our-text{margin:6px 0 12px}
+.our-room-row{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:6px}
+.our-room-btn{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-width:0;min-height:84px;margin:0;padding:6px 2px;border:2px solid #cfe0ef;border-radius:14px;background:#fff;color:#1f3c5a;font:inherit;font-size:15px;font-weight:800;line-height:1.2;cursor:pointer}
+.our-room-btn:hover{border-color:#2f80d1;background:#f3f8fd}
+.our-room-btn:focus-visible{outline:3px solid #2f80d1;outline-offset:2px}
+.our-room-btn .our-pose-fig{display:block;width:100%;height:52px}
+.our-room-waist [data-kind-arm]{display:none}
+.our-room-ico{display:grid;place-items:center;width:100%;height:52px;color:#2f80d1}
+.our-room-ico svg{width:40px;height:40px}
+.our-room-name{max-width:100%;word-break:keep-all;overflow-wrap:anywhere}
+@media (min-width:700px){.our-room-row{gap:10px}.our-room-btn{min-height:122px;font-size:17px}.our-room-btn .our-pose-fig,.our-room-ico{height:84px}.our-room-ico svg{width:60px;height:60px}}
+body.copy-large .our-room-btn{font-size:18px}
 /* 사진 찍을 때 자세 다시 보기 (XR 13, 11-11 분당서울대 흉부 엑스레이 VR): 보기만, 움직임 없음. 폰은 한 줄 4칸 낮게, PC 는 크게 */
 #story .our-pose{margin:8px 0 0;padding:6px 6px 4px;border:1px solid #d6e6f5;border-radius:14px;background:#f3f8fd}
 #story .our-pose-q{margin:0 0 4px 2px;color:#1f3c5a;font-size:15px;font-weight:800;line-height:1.25}
@@ -4105,6 +4120,7 @@ document.addEventListener('visibilitychange',()=>{
  function ourAfter(){
   ourLayerOff();
   ourGuardianButton();
+  ourRoomNav();
   ourGateLabel();
   ourRestButton();
   ourStickerCheck();
@@ -4115,6 +4131,7 @@ document.addEventListener('visibilitychange',()=>{
   ourHomeMissions();
   ourStepExtra();
   ourPoseRecap();
+  ourRoomBoard();
   ourSchedQuick();
   ourSchedText();
   ourRecapSections();
@@ -4808,6 +4825,62 @@ document.addEventListener('visibilitychange',()=>{
   const help=card.querySelector('.v15-help-trigger');
   if(help)help.insertAdjacentHTML('beforebegin',html);else card.insertAdjacentHTML('beforeend',html);
  }
+ /* ---- [연습장] 연습만 다시 하기 (11-11 실험, Okee "연습장" — docs/ref-cases-2026-11-09.html). 빼기 apply-room.py --undo · 끄기 OUR_ROOM_ON=false
+    엑스레이 끝 화면, 미션 칸 아래에 연습 단계(서는 곳 · 가슴 · 허리 · 턱 + 숨 참기)를 그림 버튼으로 → 누르면 그 연습으로 바로.
+    그 연습 화면의 [다음 단계]가 [연습 고르기로]가 되어 끝 화면의 이 칸으로 돌아옴. [이전 단계]나 다른 이동을 하면 보통 이야기로.
+    처음부터 14단계를 다 넘기지 않고 같은 연습을 여러 번 (반복). 그림은 13단계 자세 칸(ourPoseFig) 그대로, 숨 참기는 미션 그림.
+    xray-photograph 역할이 있는 검사만 → 다른 4종은 그대로 ---- */
+ const OUR_ROOM_ON=true;
+ let ourRoom=null,ourRoomBack=-1; // ourRoom = {cid,i}: 끝 화면에서 고른 연습 (그 단계를 떠나면 지움) / ourRoomBack: 돌아오면 그 버튼이 보이게
+ function ourRoomList(){
+  if(!OUR_ROOM_ON||!c()||typeof ourPoseFig!=='function'||!pages.some(q=>q.scenarioRole==='xray-photograph'))return null;
+  const list=[];
+  pages.forEach((q,i)=>{
+   const k=kindOf(q);
+   if(k==='tapArea'){const t=tapTarget(q);if(OUR_POSES[t])list.push({i,t,name:OUR_POSES[t][0]});}
+   else if(k==='breathHold')list.push({i,t:'breath',name:'숨 참기'});
+  });
+  return list.length>=2?list:null;
+ }
+ function ourRoomBreathIcon(){const m=((typeof OUR_MISSION_SETS!=='undefined'&&OUR_MISSION_SETS.xray)||[]).find(m=>m.roles.includes('@practice'));return ourHelpIcon(m?m.icon:'<circle cx="12" cy="12" r="9"/>');}
+ function ourRoomBoard(){
+  if(pi<pages.length||!c())return;
+  const main=document.querySelector('#complete .complete-main');if(!main||main.querySelector('.our-room'))return;
+  const list=ourRoomList();if(!list)return;
+  const html='<section class="our-room" aria-labelledby="ourRoomH"><h2 id="ourRoomH">연습만 다시 해 볼까요?</h2><p class="our-text">누르면 그 연습으로 가요.</p><div class="our-room-row" style="--n:'+list.length+'">'
+   +list.map(x=>'<button type="button" class="our-room-btn our-room-'+x.t+'" data-our-room="'+x.i+'" aria-label="'+E(x.name)+' 연습 다시 하기">'+(x.t==='breath'?'<span class="our-room-ico">'+ourRoomBreathIcon()+'</span>':ourPoseFig(x.t))+'<span class="our-room-name" aria-hidden="true">'+E(x.name)+'</span></button>').join('')+'</div></section>';
+  const at=main.querySelector('.our-mission-done')||main.querySelector('.our-board')||main.querySelector('.complete-hero');
+  if(at)at.insertAdjacentHTML('afterend',html);else main.insertAdjacentHTML('afterbegin',html);
+  if(ourRoomBack>=0){
+   const b=main.querySelector('[data-our-room="'+ourRoomBack+'"]');ourRoomBack=-1;
+   if(b){
+    const sec=b.closest('.our-room'),show=()=>{const r=sec.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)sec.scrollIntoView({block:'center'});};
+    show();try{b.focus({preventScroll:true});}catch(e){}
+    setTimeout(()=>{if(sec.isConnected)show();},250); // 그린 뒤 그림이 늦게 자리를 잡아 밀리는 때가 있어 한 번 더
+   }
+  }
+ }
+ /** 끝 화면에서 고른 연습: [다음 단계] → [연습 고르기로] (ourGateLabel 보다 먼저 — 그 함수가 지금 글자를 기억했다가 되돌림) */
+ function ourRoomNav(){
+  if(!ourRoom)return;
+  if(!c()||c().id!==ourRoom.cid||pi!==ourRoom.i){ourRoom=null;return;}
+  const next=document.getElementById('pNext');if(!next)return;
+  next.dataset.ourRoom='1';next.textContent='연습 고르기로 →';
+ }
+ document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-our-room]');if(!b)return;
+  if(b.id==='pNext'){
+   if(!ourRoom||b.disabled||practiceState==='running')return; // 하는 중이면 원래 처리에 맡김
+   if(typeof window.__hvTapAt==='number'&&performance.now()-window.__hvTapAt<700)return; // 0.7초 연타 막기(PRINCIPLE_GUARD)에 맡김
+   e.preventDefault();e.stopImmediatePropagation();
+   const just=pages[pi];if(just)done[just.id]=true;if(c())journeyDone[c().id]=done; // 원래 [다음]과 같이 해낸 것으로
+   ourRoomBack=ourRoom.i;ourRoom=null;pi=pages.length;render(false); // false: 끝 화면 글("잘했어요! 검사 과정을…")을 연습마다 다시 읽지 않음
+   return;
+  }
+  const i=Number(b.dataset.ourRoom);if(!(i>=0&&i<pages.length)||!c())return;
+  e.preventDefault();e.stopImmediatePropagation();
+  ourRoom={cid:c().id,i};pi=i;render(true);
+ },true);
  function ourStepImage(q){const m=q&&(q.media||[]).find(m=>A[m.assetId]&&A[m.assetId].kind==='image');return m?{src:A[m.assetId].data,alt:m.alt||''}:null;}
  function ourStepExtra(){
   const p=pages[pi];if(!p||pi<0||pi>=pages.length)return;
