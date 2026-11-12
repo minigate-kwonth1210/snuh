@@ -2424,6 +2424,14 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 #story .our-wait-row>.our-wait{flex:1 1 auto;white-space:nowrap}
 /* 11단계 「미리 알아두어요」를 펴면 글 칸이 길어져 화면이 내려가며 왼쪽 그림 위가 위 막대 밑으로 잘렸음 → 왼쪽 사진 칸은 위 막대 아래에 붙어 있음 */
 html body #story.screen .story-main>.shell>.visual-wrap{position:sticky;top:170px}
+/* 11-12 본인 "왼쪽 오른쪽 화면이 안 맞아": 사진 칸이 4:3(영상 16:9)으로 묶여 오른쪽 글 칸·버튼 줄보다 짧았음 (1280×720 135px · 1728×1270 393px, 영상은 가운데 떠 있음)
+   → 연습 단계 왼쪽 칸처럼 버튼 줄 끝 16px 위까지 늘림. 사진·그림·영상은 그 안 가운데 (사진은 다 보이게, 남는 곳은 원래 있던 흐린 배경).
+     글 칸이 길어져 화면이 내려가도 왼쪽은 화면 높이까지만 (위의 붙어 있기 그대로) */
+html body #story.screen .story-main>.shell>.visual-wrap,html body #story.screen .story-main>.shell>.visual-wrap:has(video){align-self:stretch;margin:0 0 16px!important;display:flex;flex-direction:column;max-height:calc(100vh - 186px)}
+html body #story.screen .story-main>.shell>.visual-wrap>.visual-stage{flex:1 1 auto;aspect-ratio:auto!important;max-height:none!important}
+html body #story.screen .story-main>.shell>.visual-wrap>.visual-stage>.ux-frame{margin:auto 0;max-height:100%}
+/*   「다 보이게」 사진(세로 사진 등)은 틀을 칸 전체로 → 높은 화면에서 더 크게. 「꽉 채우기」(병원이 위치를 맞춘 사진)·영상은 틀 비율 그대로 가운데 */
+html body #story.screen .story-main>.shell>.visual-wrap>.visual-stage>.ux-frame:has(>img[style*="object-fit:contain"],>img[style*="object-fit: contain"]){aspect-ratio:auto!important;margin:0;max-height:none}
 }
 /* 끝 화면 (넓고 낮은 화면, 1280×720): 위 그림(240px)이 커서 미션 2·3이 아래 버튼 줄 밑이었음 → 그림을 화면 높이에 맞춰 줄임 (높은 화면은 그대로) */
 @media (min-width:1024px) and (orientation:landscape) and (max-height:900px){
@@ -5040,10 +5048,9 @@ document.addEventListener('visibilitychange',()=>{
  }
  function ourIdleTarget(){
   if(document.querySelector('.our-layer,#pSheet,.ux-resume'))return null;
-  if(pi===-2){ // 첫 화면: 아직 끝까지 안 한 검사
-   const cards=[...document.querySelectorAll('#home [data-p="choose"]')];
-   return cards.find(b=>{const x=contents[Number(b.dataset.i)];return x&&!ourStickerOf(x.id).count;})||null;
-  }
+  // 11-12 본인 "메인에 노란 테두리는 안 해도 될 듯, 무슨 검사를 고를지는 자기 마음": 첫 화면(검사 고르기)에는 고리·손가락 없음
+  //   (전에는 아직 끝까지 안 한 검사 카드에 고리)
+  if(pi===-2)return null;
   if(pi<0||pi>=pages.length)return null; // 완료 화면 등 끝난 화면에는 안내 없음
   const vis=el=>el&&el.offsetParent!==null&&getComputedStyle(el).visibility!=='hidden';
   const next=document.getElementById('pNext'),practice=document.querySelector('#story .kind-layout,#story .practice-layout');
