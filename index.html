@@ -6002,8 +6002,9 @@ document.addEventListener('visibilitychange',()=>{
     +'<button type="button" class="p-button our-xr-real" data-our-xr-back>그림으로 돌아가기</button></div>'
    :'<div class="our-xr-intro">'+bodyFigure({label:'가슴 안쪽을 사진으로 찍어요 (그림)',extra:ribs})
     +'<span class="our-xr-calm"><b aria-hidden="true">✓</b> 아프지 않아요</span>'
-    +'<button type="button" class="p-button our-xr-real" data-our-xr-real>실제 사진 보기</button>'
-    +'<span class="our-ph-note">임시 그림</span></div>';
+    +'<button type="button" class="p-button our-xr-real" data-our-xr-real>실제 사진 보기</button></div>';
+  // 11-13 본인 "임시 그림인 부분 사진 넣으면 대체돼야 하는 거 아니니?": 이 그림은 병원 사진 자리가 아니라 사진 앞에 먼저 보여 주는 그림(XR 01)이라
+  //   「임시 그림」 표시를 뺌 (사진이 없는 칸의 「임시 그림 · 실제 사진 준비 중」은 그대로, 사진을 넣으면 사라짐). 편집기 1단계 사진 칸 위에 안내 한 줄 (ssLockXrIntroHint)
   // v16 층이 사진을 흐린 배경(ux-fill) + 틀(ux-frame) 두 장으로 그림 → 둘 다 빼고 그림으로 (층이 빠졌으면 첫 사진만)
   const framed=/<div class="ux-frame"[^>]*>\s*<img [^>]*>\s*<\/div>/;
   const out=framed.test(html)?html.replace(/<img class="ux-fill"[^>]*>/,'').replace(framed,art):html.replace(/<img [^>]*>/,art);
