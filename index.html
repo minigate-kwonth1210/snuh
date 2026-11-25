@@ -888,6 +888,7 @@ button{cursor:pointer}button:disabled{cursor:not-allowed}[hidden]{display:none!i
 #story .kind-body{display:block;width:100%;height:auto;overflow:visible}
 #story .kind-part{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
 #story .kind-part:focus-visible>*{stroke:#24435e;stroke-width:3px}
+#story .kind-zone.our-placed:focus-visible>*{stroke:none} /* 11-25 손을 올린 칸은 초점 동그라미를 안 그림 (손 그림과 어긋나 보임) */
 #story .kind-gel{animation:kindFadeIn .6s ease both}
 @keyframes kindFadeIn{from{opacity:0}to{opacity:1}}
 #story .kind-feel{width:100%;margin:0;padding:14px 16px;border-radius:12px;background:#fbf4e5;color:#7a5a1f;font-size:17px;line-height:1.7;text-align:center}
@@ -2132,6 +2133,11 @@ html body #story.screen .our-mo-small .our-mo-stage{max-height:var(--wd-fig,42dv
 /* 11-25 나의 검사 일정: 날짜 문장 상자 자리를 처음부터 잡아 둠 (ourSchedText, 날짜를 골라도 위 글 · 단추가 안 움직임) */
 #story .schedule-confirmation.our-sched-reserve{box-sizing:border-box;min-height:var(--our-sched-h)}
 #story .schedule-confirmation.our-sched-reserve:empty{display:block;margin:var(--our-sched-m) 0 0!important;padding:0}
+/* 11-25 다음 단계 버튼 깜빡임 (사용 유도, 본부장님) */
+@keyframes ourNudge{0%,100%{box-shadow:0 0 0 0 rgba(47,128,209,.55);filter:brightness(1)}50%{box-shadow:0 0 0 12px rgba(47,128,209,0);filter:brightness(1.12)}}
+html body #story .story-nav #pNext.our-nudge:not(:disabled){animation:ourNudge 1.6s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){html body #story .story-nav #pNext.our-nudge:not(:disabled){animation:none;box-shadow:0 0 0 4px rgba(47,128,209,.4)}}
+html body.our-reduce-motion #story .story-nav #pNext.our-nudge:not(:disabled){animation:none;box-shadow:0 0 0 4px rgba(47,128,209,.4)}
 /* 11-25 엑스레이 숨 참기 검사실 장면 (본부장님 모션안내 v1 12단계 그림). 글 크기는 장면 폭에 맞춤 (cqw 를 모르는 옛 브라우저는 앞의 px) */
 #story .our-bh-scene{position:relative;display:block;width:100%;max-width:820px;aspect-ratio:4/3;margin:0 auto;overflow:hidden;border-radius:14px;background:#d8edfa;isolation:isolate;container-type:inline-size}
 #story .kind-card>.our-bh-scene{flex:none;margin-top:auto;margin-bottom:auto} /* 폰: 장면은 남는 자리 가운데, 버튼은 아래 그대로 */
@@ -2288,7 +2294,9 @@ html body #story .visual-wrap{position:relative}
 .kind-layout .kind-ghost{animation:ourGhostOut .36s ease-in both}
 .kind-layout [data-kind-mark=waist-left] .kind-bent{transform-origin:62px 92px;animation:ourArmL .4s cubic-bezier(.2,.8,.2,1) .06s both}
 .kind-layout [data-kind-mark=waist-right] .kind-bent{transform-origin:138px 92px;animation:ourArmR .4s cubic-bezier(.2,.8,.2,1) .06s both}
-.kind-layout[data-practice-state=success] svg[data-kind-target=stand]>g.kind-part:not([data-kind-part=stand]){animation:ourHop .56s cubic-bezier(.3,0,.3,1) both}
+.kind-layout [data-kind-mark] .kind-bent.our-xr-bent{animation:ourFadeIn .3s ease-out both}
+/* 11-25 본인 "발판 누르면 팔만 움직여": 새 그림은 몸통이 따로라 같이 뜀 */
+.kind-layout[data-practice-state=success] svg[data-kind-target=stand]>g.kind-part:not([data-kind-part=stand]),.kind-layout[data-practice-state=success] svg[data-kind-target=stand]>g.our-xr-base{animation:ourHop .56s cubic-bezier(.3,0,.3,1) both}
 .kind-layout [data-kind-mark=stand]>ellipse{animation:ourFadeIn .3s ease-out .36s both}
 .kind-layout [data-kind-mark=stand] .kind-check{animation-delay:.5s}
 .kind-layout[data-practice-state=success] svg[data-kind-target=chin] [data-kind-part=head]{transform:translateY(2px);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
@@ -2316,8 +2324,8 @@ html body.our-speaking #story .ux-replay{animation:ourSay103 1.4s ease-in-out in
    축하 표시가 빠지는 순간 성공 상태의 다른 움직임(fixedPracticeSuccess)이 처음부터 다시 돌아 읽는 중간에 제목이 움찔했음 (전부터)
    → 두 상태 모두 같은 떠오르기 한 번(이름이 같아 다시 안 돎), 끝난 뒤엔 붙잡지 않음(backwards) → 읽는 동안 103% 가 이어짐 */
 html body #story .practice-layout[data-practice-state=success] #storyTitle,html body #story .practice-layout.ux-celebrate #storyTitle,html body #story .fixed-practice-instruction[data-practice-state=success] #storyTitle{animation:uxRise .55s .15s ease-out backwards}
-@media (prefers-reduced-motion:reduce){.kind-layout .kind-check,.kind-layout .kind-mark,.kind-layout .kind-mark>ellipse,.kind-layout .kind-bent,.kind-layout .kind-ghost,.kind-layout svg .kind-part,.kind-layout .kind-eye,#story .our-xr-intro .kind-eye{animation:none!important;transition:none!important}}
-.our-reduce-motion .kind-layout .kind-check,.our-reduce-motion .kind-layout .kind-mark,.our-reduce-motion .kind-layout .kind-mark>ellipse,.our-reduce-motion .kind-layout .kind-bent,.our-reduce-motion .kind-layout .kind-ghost,.our-reduce-motion .kind-layout svg .kind-part,.our-reduce-motion .kind-layout .kind-eye,.our-reduce-motion #story .our-xr-intro .kind-eye{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){.kind-layout .our-xr-base,.kind-layout .kind-check,.kind-layout .kind-mark,.kind-layout .kind-mark>ellipse,.kind-layout .kind-bent,.kind-layout .kind-ghost,.kind-layout svg .kind-part,.kind-layout .kind-eye,#story .our-xr-intro .kind-eye{animation:none!important;transition:none!important}}
+.our-reduce-motion .kind-layout .our-xr-base,.our-reduce-motion .kind-layout .kind-check,.our-reduce-motion .kind-layout .kind-mark,.our-reduce-motion .kind-layout .kind-mark>ellipse,.our-reduce-motion .kind-layout .kind-bent,.our-reduce-motion .kind-layout .kind-ghost,.our-reduce-motion .kind-layout svg .kind-part,.our-reduce-motion .kind-layout .kind-eye,.our-reduce-motion #story .our-xr-intro .kind-eye{animation:none!important;transition:none!important}
 /* [연습장] 연습만 다시 하기 (엑스레이 끝 화면, 11-11 실험): 미션 칸과 같은 카드, 그림 버튼 한 줄. 움직임 없음 */
 .our-room{width:min(100%,720px);margin:12px auto 0;padding:18px 16px;border-radius:20px;background:#fff;box-shadow:0 8px 24px -16px rgba(11,42,74,.35);text-align:center}
 .our-room h2{margin:0;font-size:24px}
@@ -3638,7 +3646,30 @@ document.addEventListener('visibilitychange',()=>{
     연습 몸 그림(bodyFigure) · 허리 짚는 팔(tapMark) · 기다리기 그림(ourWaitScene)이 같이 씀. 팔 펴기(HOLD_ARM) · 사람 아이콘(LOOK_SVG.people)은 같은 색을 글로 */
  const FIG_LINE={'#f6d7c3':'#e2b49a','#bcd7f5':'#86aedb','#a7c7ee':'#86aedb','#7f9cc9':'#5b78a6','#6d8bba':'#5b78a6','#5a6f94':'#45597c','#cfe6d6':'#8fbf9f'};
  const figLine=(c,w)=>FIG_LINE[c]?' stroke="'+FIG_LINE[c]+'" stroke-width="'+(w||(c==='#f6d7c3'?0.9:1.1))+'" stroke-linejoin="round"':'';
+ /* 11-25 본부장님 "이미지 교체" · 본인 "다 적용해": 엑스레이 누르기 연습(7 · 8 · 10단계)과 13단계 자세 다시 보기의 사람 그림을 받은 캐릭터로.
+    그림은 몸통(아래팔을 뗀 것)과 양쪽 아래팔 세 장 (_received/2026-11-25-character, 팔은 소매 끝 아래를 몸통 테두리 바깥으로 뗌). 좌표는 예전 그림(200 폭)에 맞춰 놓음:
+    어깨 → y82, 신발 끝 → y296, 몸 가운데 → x100 (배율 .4155). 누르는 부위는 그림 위의 안 보이는 칸, 허리에 손을 올리면 그쪽 아래팔을 숨기고 굽힌 팔을 그림 */
+ const OUR_XR_BODY={base:'assets/m269.webp',armL:'assets/m270.webp',armR:'assets/m271.webp'};
+ const XR_CENTER={chest:{x:100,y:114},'waist-left':{x:76,y:158},'waist-right':{x:124,y:158}}; // 허리: 굽힌 손이 놓이는 자리
+ const bodyC=(n,xr)=>xr&&XR_CENTER[n]||BODY_CENTER[n];
+ function xrBodyFigure(o){
+  const K=.4155,f=v=>(+v.toFixed(2)),img=(h,x,y,w,hh)=>'<image href="'+h+'" x="'+f(34.35+x*K)+'" y="'+f(-1.1+y*K)+'" width="'+f(w*K)+'" height="'+f(hh*K)+'" pointer-events="none"/>';
+  const part=(name,shapes)=>o.interactive?'<g class="kind-part" data-kind-part="'+name+'" role="button" tabindex="0" aria-label="'+E(bodyName(name))+'">'+shapes+'</g>':'<g>'+shapes+'</g>';
+  const H=' fill="#000" fill-opacity="0"';
+  return '<svg class="kind-body" viewBox="0 0 200 '+(o.floor?330:300)+'" role="group" '+(o.attrs||'')+' aria-label="'+E(o.label)+'">'
+   +'<defs><filter id="kind-glow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ffb703" flood-opacity="0.95"/><feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="#ffb703" flood-opacity="1"/></filter></defs>'
+   +(o.floor?part('stand','<rect x="36" y="298" width="128" height="28" rx="10" fill="#dfe7f0" stroke="#9fb3c8" stroke-width="2"/><ellipse cx="82" cy="312" rx="11" ry="5" fill="#b9c8d9"/><ellipse cx="118" cy="312" rx="11" ry="5" fill="#b9c8d9"/>'):'')
+   +'<g class="our-xr-base">'+img(OUR_XR_BODY.base,0,0,370,720)+'</g>'
+   +part('leg','<rect x="70" y="187" width="60" height="106"'+H+'/>')
+   +part('arm','<g data-kind-arm="left">'+img(OUR_XR_BODY.armL,38,291,52,161)+'</g><g data-kind-arm="right">'+img(OUR_XR_BODY.armR,227,291,52,161)+'</g>'
+    +'<rect x="48" y="90" width="22" height="96" rx="8"'+H+'/><rect x="130" y="90" width="22" height="96" rx="8"'+H+'/>')
+   +part('belly','<rect x="69" y="140" width="62" height="47"'+H+'/>')
+   +part('chest','<rect x="62" y="80" width="76" height="60"'+H+'/>')
+   +part('head','<circle cx="100" cy="40" r="31"'+H+'/>')
+   +(o.zones||'')+(o.extra||'')+'</svg>';
+ }
  function bodyFigure(o){
+  if(o.xr)return xrBodyFigure(o);
   const SKIN='#f6d7c3',SHIRT='#bcd7f5',PANTS='#7f9cc9',PANTS_CUFF='#6d8bba',SLEEVE_CUFF='#a7c7ee';
   const belly=o.bareBelly||o.bareChest,feet=o.bareFeet;
   const part=(name,shapes)=>o.interactive?'<g class="kind-part" data-kind-part="'+name+'" role="button" tabindex="0" aria-label="'+E(bodyName(name))+'">'+shapes+'</g>':'<g>'+shapes+'</g>';
@@ -3671,13 +3702,28 @@ document.addEventListener('visibilitychange',()=>{
  /** 부위 고르기 그림: 배를 누를 곳이면 윗옷을 올려 배가 보이는 모습. 젤 방울은 숨겨 두었다가 맞으면 보임 */
  /** 맞으면 보이는 표시 (누를 수 없게 — 다시 누르면 아래 부위가 받음). kind: gel 젤 방울(초음파) / check 체크.
     허리는 손 + 체크, 서는 곳은 발자국 + 체크 */
- function tapMark(part,kind){
-  const c=BODY_CENTER[part];
+/* 11-25 엑스레이 허리 연습 (본인 "팔 모양이 이상해, 그림처럼 만들어"): 소매 · 위팔 · 아래팔은 받은 그림과 같은 색 · 테두리로 새로 그리고, 손만 받은 그림의 손을 돌려 붙임.
+ 좌표는 그림 원본(370 폭) 기준 왼팔, 오른팔은 몸 가운데(317/2)로 뒤집음. 위쪽 끝은 소매 선 바로 아래 */
+ let ourBentN=0;
+ function xrBentArm(side){
+  const id='our-bent-'+(++ourBentN),A='M42 284 C36 298 31 312 30 326 C29 340 34 350 44 355 C58 362 70 368 80.5 374.5',B='M96 350 C86 344 74 336 64 328 C68 318 73 306 77 296',S='M61 232 C55 250 47 266 41 279 Q39.6 282.6 42.4 283.5 L80.4 293.8 L88.6 297';
+  const arm='<clipPath id="'+id+'"><rect x="38" y="381" width="46" height="80"/></clipPath><g transform="translate(24 -26) rotate(-35 60 385)"><image href="'+OUR_XR_BODY.armL+'" x="38" y="291" width="52" height="161" clip-path="url(#'+id+')"/></g>'
+   +'<path d="'+A+' L'+B.slice(1)+' Z" fill="#fcd8b9"/><path d="'+A+' '+B+'" fill="none" stroke="#3b2f2a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>'
+   // 팔 굵기는 원본에 맞춤 (위팔 약 35 · 아래팔 약 33, 본인 "팔뚝이 얇아"). 소매도 팔 방향으로 벌림 (본인 "파란 팔 소매쪽부터"). 팔꿈치는 몸 가까이, 직각으로 꺾지 않음 (본인 "너무 튀어나와"): 원래 소매를 덮는 새 소매, 위쪽은 옷과 이어지게 테두리 없음
+   +'<path d="'+S+' L89.6 236 Z" fill="#a0c2eb"/><path d="'+S+'" fill="none" stroke="#3b2f2a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>';
+  return '<g class="kind-bent our-xr-bent"><g transform="translate(34.35 -1.1) scale(.4155)">'+(side==='R'?'<g transform="translate(317 0) scale(-1 1)">'+arm+'</g>':arm)+'</g></g>';
+ }
+ function tapMark(part,kind,xr){
+  const c=bodyC(part,xr);
   const check=(x,y)=>'<g class="kind-check"><circle cx="'+x+'" cy="'+y+'" r="11" fill="#2e7d32" stroke="#ffffff" stroke-width="2.5"/><path d="M'+(x-5)+' '+y+' l3.5 3.8 l6.5 -7.5" stroke="#ffffff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>';
   if(kind==='gel')return '<g class="kind-gel" data-kind-mark="'+part+'" pointer-events="none" style="display:none"><ellipse cx="'+c.x+'" cy="'+c.y+'" rx="28" ry="15" fill="#bfe8ff" opacity="0.75"/><ellipse cx="'+(c.x-8)+'" cy="'+(c.y-5)+'" rx="9" ry="4" fill="#ffffff" opacity="0.85"/><circle cx="'+(c.x+16)+'" cy="'+(c.y+4)+'" r="3" fill="#ffffff" opacity="0.9"/></g>';
   let g;
   // 허리: 그쪽 팔이 팔꿈치를 밖으로 굽혀 손이 허리에 (늘어진 팔은 tapDraw 가 숨김)
-  if(part==='waist-left'||part==='waist-right'){
+  if(xr&&(part==='waist-left'||part==='waist-right')){
+   // 11-25 본인 "손 모양이 징그러워": 그린 팔 대신 받은 그림의 팔을 팔꿈치에서 둘로 나눠 굽힘 (손 그림 그대로)
+   const s=part==='waist-left'?-1:1;g=xrBentArm(s<0?'L':'R')+check(c.x-s*8,c.y-28);
+  }
+  else if(part==='waist-left'||part==='waist-right'){
    const s=part==='waist-left'?-1:1,sx=100+s*38,ex=100+s*70,ax=100+s*50;
    // 늘어진 팔 그림자(kind-ghost): 평소엔 안 보이고, 연습 칸에서 맞을 때만 사라지며 굽힌 팔로 바뀌어 보이게 (11-12)
    g='<g class="kind-ghost" transform="rotate('+(-s*12)+' '+ax+' 90)"><rect x="'+(ax-12)+'" y="84" width="24" height="96" rx="12" fill="#bcd7f5"'+figLine('#bcd7f5')+'/><circle cx="'+ax+'" cy="184" r="12" fill="#f6d7c3"'+figLine('#f6d7c3')+'/></g>'
@@ -3697,7 +3743,8 @@ document.addEventListener('visibilitychange',()=>{
   const target=tapTarget(p),want=bodyName(target),parts=tapParts(p);
   const own=target==='chin'||target==='stand'||!!TAP_GROUPS[target]; // 그 부위만의 표시가 있는 곳
   const plate=target==='chest'&&/^xray/.test(p.scenarioRole||'')?'<g class="kind-mark kind-plate" data-kind-mark="chest-plate" pointer-events="none" style="display:none">'+XR_PLATE+'</g>':'';
-  const marks=plate+parts.map(n=>tapMark(n,own||kindSet(p).mark==='check'?'check':'gel')).join('');
+  const xr=/^xray/.test(p.scenarioRole||''); // 11-25 엑스레이는 받은 캐릭터 그림
+  const marks=plate+parts.map(n=>tapMark(n,own||kindSet(p).mark==='check'?'check':'gel',xr)).join('');
   // 따로 누르는 자리: 그린 부위 위에 겹침. 누르는 칸은 그림보다 크게 (손가락 48px 이상), 평소에는 안 보임
   const zone=(name,shape)=>'<g class="kind-part kind-zone" data-kind-part="'+name+'" role="button" tabindex="0" aria-label="'+E(bodyName(name)+(name==='waist-left'?' (화면 왼쪽)':name==='waist-right'?' (화면 오른쪽)':''))+'">'+shape+'</g>';
   let zones='';
@@ -3707,8 +3754,8 @@ document.addEventListener('visibilitychange',()=>{
   // 양손 허리: 손을 놓을 자리에 점선 동그라미 + 손바닥 (누를 곳이 보이게)
   const handSpot=(x,y)=>'<g class="kind-hand-spot"><circle cx="'+x+'" cy="'+y+'" r="15" fill="#ffffff" fill-opacity="0.75" stroke="#2f6fd6" stroke-width="2" stroke-dasharray="4 3"/>'
    +'<g fill="#9cb9e0"><rect x="'+(x-6)+'" y="'+(y-3)+'" width="12" height="11" rx="4"/>'+[-5,-1.8,1.6,5].map(d=>'<rect x="'+(x+d-1.3)+'" y="'+(y-10)+'" width="2.6" height="9" rx="1.3"/>').join('')+'</g></g>';
-  if(TAP_GROUPS[target])zones=TAP_GROUPS[target].map(n=>zone(n,handSpot(BODY_CENTER[n].x,BODY_CENTER[n].y)+'<circle class="kind-zone-hit" cx="'+BODY_CENTER[n].x+'" cy="'+BODY_CENTER[n].y+'" r="22" fill="#ffb703" fill-opacity="0"/>')).join('');
-  const svg=bodyFigure({interactive:true,bareBelly:target==='belly',floor:target==='stand',zones,attrs:'data-kind-target="'+target+'"',label:'몸 그림. '+want+(hasBatchim(want)?'을':'를')+' 찾아 눌러요',extra:marks});
+  if(TAP_GROUPS[target])zones=TAP_GROUPS[target].map(n=>{const q=bodyC(n,xr);return zone(n,handSpot(q.x,q.y)+'<circle class="kind-zone-hit" cx="'+q.x+'" cy="'+q.y+'" r="22" fill="#ffb703" fill-opacity="0"/>');}).join('');
+  const svg=bodyFigure({xr,interactive:true,bareBelly:target==='belly',floor:target==='stand',zones,attrs:'data-kind-target="'+target+'"',label:'몸 그림. '+want+(hasBatchim(want)?'을':'를')+' 찾아 눌러요',extra:marks});
   return OUR_LYING.test(p.scenarioRole||'')?lyingFigure(svg):svg;
  }
  /** 11-13 본인 고름 (4종을 엑스레이 수준으로): 초음파 · 심전도는 침대에 누워서 하는 검사인데 누르기 연습 몸 그림이 서 있었음 →
@@ -3745,7 +3792,7 @@ document.addEventListener('visibilitychange',()=>{
   // 양손 허리: 손을 올린 쪽은 늘어진 팔과 점선 자리를 숨김 (손이 네 개로 보이지 않게)
   const parts=tapParts(p),placed=n=>parts.includes(n)&&(state==='success'||tapHit.includes(n));
   lay.querySelectorAll('[data-kind-arm]').forEach(a=>{a.style.display=placed('waist-'+a.dataset.kindArm)?'none':'';});
-  lay.querySelectorAll('.kind-zone').forEach(z=>{const s=z.querySelector('.kind-hand-spot');if(s)s.style.display=placed(z.dataset.kindPart)?'none':'';});
+  lay.querySelectorAll('.kind-zone').forEach(z=>{const on=placed(z.dataset.kindPart),s=z.querySelector('.kind-hand-spot');if(s)s.style.display=on?'none':'';z.classList.toggle('our-placed',on);});
   const feel=lay.querySelector('.kind-feel');if(feel)feel.hidden=state!=='success'||!feel.textContent;
  }
  function tapChoose(p,part){
@@ -4864,7 +4911,7 @@ document.addEventListener('visibilitychange',()=>{
   if(ourOn('needleHide'))html+=ourRow('바늘·피 사진 (채혈·주사)','',ourChoice('hideNeedle','false','보이기',!s.hideNeedle)+ourChoice('hideNeedle','true','가리기',s.hideNeedle));
   let more=ourRow('소리 크기','읽어 주는 말·AI 음성·검사 소리·병원 효과음 크기예요.',OUR_VOLUMES.map(([v,t])=>ourChoice('volume',String(v),t,s.volume===v)).join(''))+ourRow('화면 움직임','',ourChoice('reduceMotion','false','보통',!s.reduceMotion)+ourChoice('reduceMotion','true','줄이기',s.reduceMotion));
   if(ourOn('practiceGate'))more+=ourRow('연습 먼저 하기','연습을 해야 [다음 단계]를 누를 수 있어요. 손 쓰기가 어려우면 꺼 주세요.',ourOnOff('practiceGate',s.practiceGate!==false));
-  if(ourOn('idlePrompt')&&ourOn('idleHand'))more+=ourRow('손가락 안내','한참 멈춰 있으면 손가락 그림이 누를 곳을 가리켜요.',ourOnOff('guideHand',s.guideHand!==false));
+  if(false)more+=ourRow('손가락 안내','한참 멈춰 있으면 손가락 그림이 누를 곳을 가리켜요.',ourOnOff('guideHand',s.guideHand!==false));
   if(ourOn('setup')&&ourOn('needleHide'))more+=ourRow('처음 설정 화면','처음 열 때 나오는 "보호자님, 시작하기 전에" 창이에요. 꺼 두면 기록을 지운 뒤에도 안 나와요.',ourOnOff('showSetup',s.showSetup!==false));
   html+='<details class="our-more"><summary>더 많은 설정</summary>'+more+'</details>';
   if(ourOn('nextPerson'))html+='<button type="button" class="our-wide our-danger" data-our="reset">앞사람 기록 모두 지우기</button>';
@@ -5459,9 +5506,9 @@ document.addEventListener('visibilitychange',()=>{
  const OUR_POSES={stand:['서는 곳','발판에 서요'],chest:['가슴','가슴을 판에 대요'],waist:['허리','양손을 허리에 올려요'],chin:['턱','턱을 받침대에 올려요']};
  const OUR_POSE_VIEW={stand:'14 120 172 210',up:'8 4 184 206'}; // 서는 곳은 배~발판(발자국이 크게), 나머지는 머리~허리 (칸 크기가 같게 비슷한 비율)
  function ourPoseFig(t){
-  const marks=(TAP_GROUPS[t]||[t]).map(n=>tapMark(n,'check')).join('').replace(/ style="display:none"/g,'');
+  const marks=(TAP_GROUPS[t]||[t]).map(n=>tapMark(n,'check',true)).join('').replace(/ style="display:none"/g,'');
   const rest=t==='chin'?'<rect x="76" y="71" width="48" height="11" rx="5.5" fill="#c9d3df" stroke="#8a9bb0" stroke-width="1.5"/>':t==='chest'?XR_PLATE:''; // 턱 받침대 · 가슴 검사판 (연습 그림과 같은 모양)
-  return bodyFigure({floor:t==='stand',label:'',extra:rest+marks})
+  return bodyFigure({xr:true,floor:t==='stand',label:'',extra:rest+marks})
    .replace(/<defs>[\s\S]*?<\/defs>/,'') // 연습 그림의 빛 필터 id 가 겹치지 않게
    .replace(/class="kind-body" viewBox="[^"]*" role="group"\s*aria-label=""/,'class="our-pose-fig" viewBox="'+(t==='stand'?OUR_POSE_VIEW.stand:OUR_POSE_VIEW.up)+'" aria-hidden="true" focusable="false"');
  }
@@ -5801,6 +5848,7 @@ document.addEventListener('visibilitychange',()=>{
     읽는 중·창이 떠 있을 때는 세지 않음. 누르거나 키를 누르면 바로 사라지고 처음부터 셈. 깜빡임 없이 천천히 숨 쉬듯 ---- */
  // 11-11 본인 "노란 테두리가 너무 빨리 나와, 숨 참기 하는데 나와": 다 읽은 바로 뒤(0초) → 8초 뒤로, 연습하는 중(running)에는 안 나옴,
  // 연습 상태가 바뀌면(시작·해냄) 떠 있던 고리를 지우고 처음부터 셈 (kindState)
+ const OUR_IDLE_OFF=true;
  const OUR_RING_MS=15000,OUR_RING_AFTER_READ_MS=8000,OUR_HAND_MS=15000;
  let ourIdleAt=performance.now(),ourRingAt=0,ourHeard=false,ourHandDone=false;
  function ourSpeaking(){
@@ -5847,7 +5895,8 @@ document.addEventListener('visibilitychange',()=>{
   target.setAttribute('data-fx-guide','hand');
  }
  setInterval(()=>{
-  if(!ourOn('idlePrompt')||OUR_WALK||document.hidden){if(document.querySelector('.our-ring'))ourIdleClear();return;}
+  // 11-25 본인 "이러면 노란 줄 하이라이트 관련한 건 다 없애, 에디터 포함": 다음 단계 버튼 깜빡임(our-nudge)으로 바꿔 빛 고리 · 손가락은 안 나옴
+  if(OUR_IDLE_OFF||!ourOn('idlePrompt')||OUR_WALK||document.hidden){if(document.querySelector('.our-ring,.our-hand'))ourIdleClear();return;}
   const now=performance.now();
   if(ourSpeaking()){ourIdleAt=now;ourHeard=true;return;} // 읽는 동안은 세지 않음
   const target=ourIdleTarget();
@@ -6271,6 +6320,7 @@ document.addEventListener('visibilitychange',()=>{
     그림 → 사진으로 천천히 바뀜 + [그림으로 돌아가기]. 다른 단계에 갔다 오면 다시 그림부터.
     같은 날 "준비 1단계 공백이 왜 이리 많아": 그림 크기를 폰에 맞춘 고정 px → 사진 칸(4:3) 높이에 맞춰 커짐 (CSS .our-xr-intro, cqh) */
  const OUR_XR_STAGE=stageHTML;
+ const OUR_XR_CHAR='assets/m272.webp';
  const ourXr={id:null,show:false};
  /* 11-13 본인 "1단계 그림 먼저 보이기 해봐" (4종을 엑스레이 수준으로): 초음파 · 심전도 · 채혈 · 정맥주사 검사 소개(검사 목적)도 XR 01 처럼 그림이 먼저.
     병원 사진이 아직 없으면 빈 상자 대신 그림 + 안심 한 줄, 사진을 넣으면 [실제 사진 보기] (엑스레이와 같은 버튼 · 같은 칸 안에서 바뀜).
@@ -6344,13 +6394,15 @@ document.addEventListener('visibilitychange',()=>{
    return (fr.test(html)?html.replace(/<img class="ux-fill"[^>]*>/,'').replace(fr,art4):html.replace(/<img [^>]*>/,art4)).replace('class="visual-wrap ','class="visual-wrap our-xr-wrap ');
   }
   // 가슴 안쪽(갈비뼈)을 떠올리게 하는 파란 판 — 비식별·그림
-  const ribs='<g pointer-events="none"><rect x="64" y="86" width="72" height="56" rx="14" fill="#cfe4fb" opacity=".9"/>'
-   +[98,108,118,128].map(y=>'<path d="M74 '+y+' Q100 '+(y+8)+' 126 '+y+'" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>').join('')+'</g>';
+  // 11-25 본부장님 "사진 이미지 교체": 1단계 사람 그림을 받은 캐릭터(_received/2026-11-25-character, 투명 배경 잘라 높이 720 webp)로. 가슴 판은 새 그림 가슴 자리에
+  const ribs='<g pointer-events="none"><rect x="101" y="222" width="116" height="96" rx="18" fill="#cfe4fb" opacity=".9"/>'
+   +[242,259,276,293].map(y=>'<path d="M115 '+y+' Q159 '+(y+12)+' 203 '+y+'" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round"/>').join('')+'</g>';
+  const xrChar=(label)=>'<svg class="kind-body our-xr-char" viewBox="0 0 370 720" role="img" aria-label="'+E(label)+'"><image href="'+OUR_XR_CHAR+'" width="370" height="720"/>'+ribs+'</svg>';
   const art=ourXr.show
    ?'<div class="our-xr-intro our-xr-shown"><img class="our-xr-img" src="'+photo.src+'" alt="'+E(photo.alt||'가슴 엑스레이 사진')+'"'+photo.mk+'>'
     +'<span class="our-xr-cap">가슴 안쪽을 찍으면 이렇게 보여요</span>'
     +'<button type="button" class="p-button our-xr-real" data-our-xr-back>그림으로 돌아가기</button></div>'
-   :'<div class="our-xr-intro">'+bodyFigure({label:'가슴 안쪽을 사진으로 찍어요 (그림)',extra:ribs})
+   :'<div class="our-xr-intro">'+xrChar('가슴 안쪽을 사진으로 찍어요 (그림)')
     +'<span class="our-xr-calm"><b aria-hidden="true">✓</b> 아프지 않아요</span>'
     +'<button type="button" class="p-button our-xr-real" data-our-xr-real>실제 사진 보기</button></div>';
   // 11-13 본인 "임시 그림인 부분 사진 넣으면 대체돼야 하는 거 아니니?": 이 그림은 병원 사진 자리가 아니라 사진 앞에 먼저 보여 주는 그림(XR 01)이라
@@ -6605,6 +6657,20 @@ document.addEventListener('visibilitychange',()=>{
  /* [우리 기능] 음성 재생 상태 표시 (11-06 스토리보드): 읽는 동안 [다시 듣기] 버튼이 파랗게 + 소리 그림이 천천히 숨 쉬듯, 위 소리 버튼에 초록 테두리.
     읽는 중인지는 ourSpeaking (기기 음성·AI 음성). speak 의 끝 신호는 부르는 쪽이 덮어써서 못 씀 → 0.25초마다 봄 */
  if(!OUR_WALK)setInterval(()=>{const on=ourSpeaking();if(document.body.classList.contains('our-speaking')!==on)document.body.classList.toggle('our-speaking',on);},250);
+ /* 11-25 본부장님 "화면별 음성 완료시점에 다음단계 버튼 펄스 효과 가능할까요? 사용 유도 장치가 있어야 할 것 같아요":
+    안내 음성이 끝나면 [다음 단계]가 천천히 커졌다 작아짐 (our-nudge). 본인 정함: 소리가 없으면(자동 읽기 끔 · 소리 끔) 화면이 뜨고 4초 뒤.
+    연습 단계는 연습을 마쳐 버튼이 켜진 뒤(칭찬 말이 끝나면). 다시 읽는 동안은 멈춤. 일정의 [건너뛰기]는 안 함. 움직임 줄이기면 테두리 빛만 (CSS) */
+ const OUR_NUDGE_WAIT=4000;let ourNudge={key:null,t:0,spoke:false};
+ setInterval(()=>{
+  const nx=document.querySelector('#story.active .story-nav #pNext');if(!nx){ourNudge.key=null;return;}
+  const key=(c()&&c().id)+':'+pi;
+  if(ourNudge.key!==key)ourNudge={key,t:Date.now(),spoke:false};
+  // 미션 · 스티커 창이 떠 있는 동안은 세지 않음. 창을 닫은 뒤 1.5초는 창이 읽던 말의 끝과 화면 글을 다시 읽기 시작(0.72초 뒤) 사이라 기다림
+  if(document.querySelector('.our-layer')){ourNudge.t=Date.now();ourNudge.spoke=false;ourNudge.hold=Date.now()+1500;}
+  const speaking=ourSpeaking(),held=Date.now()<(ourNudge.hold||0);if(speaking&&!held)ourNudge.spoke=true;
+  const on=!held&&!nx.disabled&&!speaking&&!nx.classList.contains('our-sched-skip')&&(ourNudge.spoke||Date.now()-ourNudge.t>=OUR_NUDGE_WAIT);
+  if(nx.classList.contains('our-nudge')!==on)nx.classList.toggle('our-nudge',on);
+ },250);
  /* [우리 기능] 사진을 못 불러오면 (11-06 스토리보드 "사진·영상 못 불러올 때 대체 화면"): 깨진 그림 대신 회색 상자 + "사진을 불러오지 못했어요".
     영상은 ourVideoPlay(.our-video-fail). 사진 자리가 아닌 작은 그림(로고·아이콘)·흐린 배경 사진(ux-fill)·영상 대신 그림은 숨기기만 */
  const OUR_IMG_BOX='.visual-stage,.ux-frame,.kind-photo,.our-zoom-layer,.our-door,.our-layer,.exam-visual,.exam-icon-panel';
